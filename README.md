@@ -97,3 +97,44 @@ will check the configuration of the object and configure input and output pins
 accordingly.
 **There is no need to call `pinMode()` for any of the pins, the library does this
 automatically**
+
+## Commands vs. datarefs
+
+The library supports various types of switches. Choose the one you need with
+care. As mentioned above, the most common reason for X-Plane switches that seem
+to move, but actually don't trigger any action is the fact that you directly
+write to datarefs instead of using the appropriate X-Plane commands that would
+trigger the action.
+
+Here's a bit of background: In X-Plane, the visual cockpit is composed of tons
+of 3D objects that are defined in .acf and .obj files. Switches are some of
+these visual 3D objects and their position in the 3D cockpit generally is
+defined by a **dataref**. That means, that for any switch in the 3D cockpit,
+there is a dataref that defines its position. This dataref is queried by the
+3D drawing engine when the cockpit is drawn on the screen.
+
+So, when you **write** to that dataref, you may even be able to change the
+position of the switch in the virtual 3D-cockpit, but, remember, that's just
+the visual representation. It doesn't mean that the **action** associated with
+the switch is actually executed. Being more specific: When you write a value 1
+to the dataref that controls the switch position for the taxi lights, the
+switch **may** appear on in the visual cockpit, but that doesn't mean that the
+taxi lights actually turn on.
+
+In order to turn on the taxi lights, you (may) have to send a specific **command**
+to X-Plane. That command, in turn, triggers a command handler that (for example)
+checks if you have electric power on your aircraft and then turns on the taxi
+lights. In turn, the command handler also sets the dataref that represents the
+position of the taxi light switch.
+
+So, the switch dataref actually is a **consequence** of the command handler,
+but it does not execute any specific action that would change a system state
+in your aircraft.
+
+You may have noticed the many **may**'s and **could**'s in this paragraph. That
+is because every aircraft in X-Plane handles these issues differently. datarefs
+can be *read/write* or *read only*, so you **may** be able to write to them or
+not. Some aircrafts, like the IXEG 737-300 can actually be controlled by Writing
+to datarefs, others, like the stock 737-800 or the Zibo version require commands.
+It really depends on the implementation of your specific aircraft and you'll have
+to check the documentation.
