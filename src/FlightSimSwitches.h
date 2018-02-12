@@ -21,6 +21,7 @@
 
 // helper macros
 #define SWITCH_POSITIONS(...) (uint32_t[]){__VA_ARGS__}
+#define SWITCH_PINS(...)(uint32_t[]{__VA_ARGS__})
 #define SWITCH_VALUES(...)    (float[]){__VA_ARGS__}
 
 // alternative names
@@ -53,10 +54,10 @@ class FlightSimSwitches {
                  uint32_t scanrate=DEFAULT_SCAN_RATE,
                  bool activeLow=true,
                  bool rowsMuxed=false );
-    void setNumberOfRows(uint8_t rows) { if (checkInitialized("setNumberOfRows",false)) numberOfRows=rows; }
-    void setNumberOfColumns(uint8_t columns) { if (checkInitialized("setNumberOfColumns",false)) numberOfColumns=columns; }
-    void setRowPins(const uint8_t *rowPins) { if (checkInitialized("setRowPins",false)) this->rowPins = rowPins; }
-    void setColumnPins(const uint8_t *columnPins) { if (checkInitialized("setColumnPins",false)) this->columnPins = columnPins; }
+    void setNumberOfOutputs(uint8_t rows) { if (checkInitialized("setNumberOfRows",false)) numberOfRows=rows; }
+    void setNumberOfInputs(uint8_t columns) { if (checkInitialized("setNumberOfColumns",false)) numberOfColumns=columns; }
+    void setOutputPins(const uint8_t *rowPins) { if (checkInitialized("setRowPins",false)) this->rowPins = rowPins; }
+    void setInputPins(const uint8_t *columnPins) { if (checkInitialized("setColumnPins",false)) this->columnPins = columnPins; }
     void setScanRate(uint32_t scanRate) { this->scanRate = scanRate; }
     void setActiveLow(uint32_t activeLow) { if (checkInitialized("setActiveLow",false)) this->activeLow=activeLow; }
     void setRowsMultiplexed(uint32_t rowsMuxed) { if (checkInitialized("setRowsMultiplexed",false)) this->rowsMuxed=rowsMuxed; }
