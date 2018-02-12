@@ -49,7 +49,7 @@ That should automatically include a
 
 in your code.
 
-#### Instantiating the `FlightSimSwitches` object
+### Instantiating the `FlightSimSwitches` object
 
 Your code needs to define at least one `FlightSimObjects` object. There are two
 ways to do this. You can either provide all parameters on the declaration of
@@ -90,7 +90,7 @@ void setup() {
 }
 ```
 
-#### Starting the switches
+### Starting the switches
 
 You **must** call `FlightSimSwitches.begin()` in your `setup()` function. This
 will check the configuration of the object and configure input and output pins
