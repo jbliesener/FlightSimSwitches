@@ -16,18 +16,18 @@ cockpits, and helped to build on others, I've learned a number of things that
 should be observed:
 
 * Hardware switches must be debounced to work correctly. See https://www.allaboutcircuits.com/technical-articles/switch-bounce-how-to-deal-with-it/
-* X-Plane can be controlled through commands or through datarefs. *The most
+* X-Plane can be controlled through commands or through datarefs. **The most
   common error made is trying to write to a dataref, when X-Plane actually
-  requires commands to control a certain feature.* See the specific section
+  requires commands to control a certain feature.** See the specific section
   below for additional explanations.
 * Repeated, high frequency dataref write operations or commands not only consume
   bandwidth on the USB bus, but also can overload and consequently crash X-Plane
-  or plugins like Lua or Python. *Only set datarefs or send commands when a
-  switch actually changes*.
-* No rule without an exception: You *must* set *all* switch values right after
+  or plugins like Lua or Python. **Only set datarefs or send commands when a
+  switch actually changes**.
+* No rule without an exception: You **must** set **all** switch values right after
   a plane is loaded in order to synchronize the plane with your real hardware.
-* Some switches in X-Plane are actually controlled through "**up**" and
-  "**down**" commands, that require a dataref for tracking. That's when things
+* Some switches in X-Plane are actually controlled through "*up*" and
+  "*down*" commands, that require a dataref for tracking. That's when things
   really start to get complicated. See below...
 * When you have LOTS of switches (more than 20 or so), you may not have enough
   pins on your Teensy to connect them all. A switch matrix (see below) is a
@@ -92,7 +92,8 @@ void setup() {
 
 ## Starting the switches
 
-You *must* call `FlightSimSwitches.begin()` in your `setup()` function. This will
-check the configuration of the object and configure input and output pins accordingly.
-*There is no need to call `pinMode()` for any of the pins, the library does this
-automatically*
+You **must** call `FlightSimSwitches.begin()` in your `setup()` function. This
+will check the configuration of the object and configure input and output pins
+accordingly.
+**There is no need to call `pinMode()` for any of the pins, the library does this
+automatically**
