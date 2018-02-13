@@ -18,8 +18,9 @@ should be observed:
 * Hardware switches must be debounced to work correctly. See https://www.allaboutcircuits.com/technical-articles/switch-bounce-how-to-deal-with-it/
 * X-Plane can be controlled through commands or through datarefs. **The most
   common error made is trying to write to a dataref, when X-Plane actually
-  requires commands to control a certain feature.** See the specific section
-  below for additional explanations.
+  requires commands to control a certain feature.** See the
+  [specific section in the Wiki](https://github.com/jbliesener/FlightSimSwitches/wiki/04.-Commands-vs.-Datarefs-(the-most-frequent-issue))
+  for additional explanations.
 * Repeated, high frequency dataref write operations or commands not only consume
   bandwidth on the USB bus, but also can overload and consequently crash X-Plane
   or plugins like Lua or Python. **Only set datarefs or send commands when a

@@ -195,7 +195,6 @@ class FlightSimPushbutton : MatrixElement {
 
     FlightSimPushbutton(uint32_t matrixPosition, bool inverted=false) : FlightSimPushbutton(FlightSimSwitches::firstMatrix, matrixPosition, inverted) {};
     FlightSimPushbutton(FlightSimSwitches &matrix, uint32_t matrixPosition, bool inverted=false) : FlightSimPushbutton(&matrix, matrixPosition, inverted) {};
-    FlightSimPushbutton(FlightSimSwitches &matrix, bool inverted=false) : FlightSimPushbutton(&matrix, NO_POSITION, inverted) {};
     FlightSimPushbutton() : FlightSimPushbutton(FlightSimSwitches::firstMatrix, NO_POSITION) {};
 
     void setPosition(uint32_t matrixPosition) { this->matrixPosition = matrixPosition; }
