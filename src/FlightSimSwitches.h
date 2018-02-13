@@ -58,6 +58,9 @@ class FlightSimSwitches {
                  uint32_t scanrate=DEFAULT_SCAN_RATE,
                  bool activeLow=true,
                  bool rowsMuxed=false );
+    FlightSimSwitches(uint8_t numberOfColumns, const uint8_t *columnPins,
+      uint32_t scanrate=DEFAULT_SCAN_RATE,
+      bool activeLow=true);
     void setNumberOfOutputs(uint8_t rows) { if (checkInitialized("setNumberOfRows",false)) numberOfRows=rows; }
     void setNumberOfInputs  (uint8_t columns) { if (checkInitialized("setNumberOfColumns",false)) numberOfColumns=columns; }
     void setOutputPins(const uint8_t *rowPins) { if (checkInitialized("setRowPins",false)) this->rowPins = rowPins; }

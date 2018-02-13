@@ -69,6 +69,11 @@ FlightSimSwitches::FlightSimSwitches(uint8_t numberOfRows, const uint8_t *rowPin
   this->debugScan = false;
 }
 
+FlightSimSwitches::FlightSimSwitches(uint8_t numberOfColumns, const uint8_t *columnPins,
+                 uint32_t scanRate, bool activeLow)
+   : FlightSimSwitches(1,FLIGHTSIM_EMPTY_PINS,numberOfColumns,columnPins,scanRate,activeLow)
+   {};
+
 bool FlightSimSwitches::checkInitialized(const char *message, bool mustBeInitialized) {
   if (initialized != mustBeInitialized) {
     Serial.printf("%10lu: FlightSimSwitch ERROR: %s must be called %s begin() %s\n",
