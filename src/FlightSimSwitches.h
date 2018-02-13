@@ -3,6 +3,10 @@
 
 #include <Arduino.h>
 
+#ifndef FLIGHTSIM_INTERFACE
+#error "Please use a Teensy board and set USB Type in Arduino to include 'Flight Sim Controls'"
+#endif
+
 /*
  * Switch Matrix for Teensy Flightsim projects
  *
@@ -21,7 +25,7 @@
 
 // helper macros
 #define SWITCH_POSITIONS(...) (uint32_t[]){__VA_ARGS__}
-#define SWITCH_PINS(...)(uint32_t[]{__VA_ARGS__})
+#define SWITCH_PINS(...)      (const uint8_t[]){__VA_ARGS__}
 #define SWITCH_VALUES(...)    (float[]){__VA_ARGS__}
 
 // alternative names
@@ -55,7 +59,7 @@ class FlightSimSwitches {
                  bool activeLow=true,
                  bool rowsMuxed=false );
     void setNumberOfOutputs(uint8_t rows) { if (checkInitialized("setNumberOfRows",false)) numberOfRows=rows; }
-    void setNumberOfInputs(uint8_t columns) { if (checkInitialized("setNumberOfColumns",false)) numberOfColumns=columns; }
+    void setNumberOfInputs  (uint8_t columns) { if (checkInitialized("setNumberOfColumns",false)) numberOfColumns=columns; }
     void setOutputPins(const uint8_t *rowPins) { if (checkInitialized("setRowPins",false)) this->rowPins = rowPins; }
     void setInputPins(const uint8_t *columnPins) { if (checkInitialized("setColumnPins",false)) this->columnPins = columnPins; }
     void setScanRate(uint32_t scanRate) { this->scanRate = scanRate; }
@@ -223,13 +227,16 @@ class FlightSimUpDownCommandSwitch : MatrixElement {
     void setDefaultValue(float defaultValue) { this->defaultValue = defaultValue; }
     void setTolerance(float tolerance) { this->tolerance = tolerance; }
     void setDatarefAndCommands(const _XpRefStr_ *positionDataref, const _XpRefStr_ *upCommand, const _XpRefStr_ *downCommand);
+    void setPushbuttonPosition(const uint8_t pushbuttonPosition) { this->pushbuttonPositions |= _BV(pushbuttonPosition); }
   protected:
-    virtual float getValue();
+    virtual float getValue(uint8_t *valueIndex);
     virtual void handleLoop(bool resync);
     virtual uint32_t getDebugMask() { return DEBUG_SWITCHES_UPDOWN_COMMAND; }
   private:
     uint8_t  numberOfPositions;
     uint32_t *matrixPositions;
+    uint32_t pushbuttonPositions;
+    FlightSimCommand *pushbuttonCommand;
     float    *values;
     float    defaultValue;
     float    tolerance;
