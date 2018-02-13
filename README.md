@@ -1,4 +1,4 @@
-# FlightSimSwitches
+# FlightSimSwitches for X-Plane and Teensy
 
 For X-Plane cockpit builders that use the Teensy microcontroller and want to
 handle switches and pushbuttons, this library provides a set of objects that
