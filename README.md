@@ -29,11 +29,14 @@ should be observed:
   a plane is loaded in order to synchronize the plane with your real hardware.
 * Some switches in X-Plane are actually controlled through "*up*" and
   "*down*" commands, that require a dataref for tracking. That's when things
-  really start to get complicated. See below...
+  really start to get complicated. Check the specific
+  [wiki page on the subject](https://github.com/jbliesener/FlightSimSwitches/wiki/03.04.-FlightSimUpDownCommandSwitch)
 * When you have LOTS of switches (more than 20 or so), you may not have enough
-  pins on your Teensy to connect them all. A switch matrix (see below) is a
+  pins on your Teensy to connect them all. A [switch matrix](https://github.com/jbliesener/FlightSimSwitches/wiki/06.-Switch-matrices) is a
   common and proven technique to connect and query many switches to a
   microcontroller. However, it requires additional software to be used.
+* Debug output: Sometime you don't know what's wrong with your sketch.
+  [Debug output](https://github.com/jbliesener/FlightSimSwitches/wiki/05.-Debugging-(and-some-words-about-Serial.print)) helps you to find and resolve the problem
 
 This library addresses all the issues mentioned above, plus some more. It is
 licensed under LGPL3 and can be used in commercial projects, according to LGPL3
