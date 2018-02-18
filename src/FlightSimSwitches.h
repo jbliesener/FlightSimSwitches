@@ -260,7 +260,7 @@ class FlightSimWriteDatarefSwitch : MatrixElement {
 
     FlightSimWriteDatarefSwitch(
       uint8_t numberOfPositions, uint32_t *positions, float *values, float defaultValue=0, float tolerance=DEFAULT_TOLERANCE)
-        : FlightSimWriteDatarefSwitchFlightSimSwitches::firstMatrix, numberOfPositions, positions, values, defaultValue, tolerance) {}
+        : FlightSimWriteDatarefSwitch(FlightSimSwitches::firstMatrix, numberOfPositions, positions, values, defaultValue, tolerance) {}
     FlightSimWriteDatarefSwitch(FlightSimSwitches &matrix,
       uint8_t numberOfPositions, uint32_t *positions, float *values, float defaultValue=0, float tolerance=DEFAULT_TOLERANCE)
         : FlightSimWriteDatarefSwitch(&matrix, numberOfPositions, positions, values, defaultValue, tolerance) {}
