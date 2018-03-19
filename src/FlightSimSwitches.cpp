@@ -41,6 +41,7 @@ FlightSimSwitches::FlightSimSwitches() {
   this->changePositionCallback = NULL;
   this->changeMatrixCallback = NULL;
   this->lastEnabled = false;
+  this->debugScan = false;
 }
 
 FlightSimSwitches::FlightSimSwitches(uint8_t numberOfRows, const uint8_t *rowPins,
@@ -50,6 +51,7 @@ FlightSimSwitches::FlightSimSwitches(uint8_t numberOfRows, const uint8_t *rowPin
     firstMatrix = this;
   }
   this->numberOfRows = numberOfRows;
+  this->numberOfRowPins = 0;
   this->rowPins = rowPins;
   this->rowsMuxed = rowsMuxed;
   this->numberOfColumns = numberOfColumns;
@@ -301,6 +303,10 @@ MatrixElement::MatrixElement(FlightSimSwitches *matrix) {
     lastElement->nextElement = this;
   }
   lastElement = this;
+  this->debug = false;
+  this->change_callback = NULL;
+  this->callbackContext = NULL;
+  this->hasCallbackContext = false;
 }
 
 bool MatrixElement::getPositionData(uint32_t position) {
@@ -314,6 +320,17 @@ bool MatrixElement::getPositionData(uint32_t position) {
   uint32_t *rowData = matrix->getRowData();
   uint32_t rowValue = rowData[MATRIX_ROW(position)];
   return rowValue & _BV(MATRIX_COLUMN(position));
+}
+
+void MatrixElement::callback(float newValue) {
+  if (!change_callback)
+    return;
+
+  if (hasCallbackContext) {
+    (*(void(*)(float,void*))change_callback)(newValue,callbackContext);
+  } else {
+    (*change_callback)(newValue);
+  }
 }
 
 
@@ -370,6 +387,7 @@ void FlightSimOnOffCommandSwitch::handleLoop(bool resync) {
           Serial.printf("%10lu: FlightSimOnOffCommandSwitch: Sending ON command %s\n", millis(), onName);
         }
         onCommand.once();
+        callback(1.0);
       }
     } else {
       if (hasOffCommand) {
@@ -377,11 +395,15 @@ void FlightSimOnOffCommandSwitch::handleLoop(bool resync) {
           Serial.printf("%10lu: FlightSimOnOffCommandSwitch: Sending OFF command %s\n",millis(), offName);
         }
         offCommand.once();
+        callback(0.0);
       }
     }
   }
 }
 
+float FlightSimOnOffCommandSwitch::getValue() {
+  return (oldValue ? 1.0 : 0.0);
+}
 
 /*
  * Matrix pushbutton. Sends a single command with begin/end to X-Plane.
@@ -407,13 +429,19 @@ void FlightSimPushbutton::handleLoop(bool resync) {
         Serial.printf("%10lu: FlightSimPushbutton: Sending command %s BEGIN\n", millis(), commandName);
       }
       command.begin();
+      callback(1.0);
     } else {
       if (debug) {
         Serial.printf("%10lu: FlightSimPushbutton: Sending command %s END\n",millis(), commandName);
       }
       command.end();
+      callback(0.0);
     }
   }
+}
+
+float FlightSimPushbutton::getValue() {
+  return (oldValue ? 1.0 : 0.0);
 }
 
 
@@ -448,7 +476,7 @@ void FlightSimUpDownCommandSwitch::setDatarefAndCommands(const _XpRefStr_ *posit
   this->downCommand.assign(downCommand);
 }
 
-float FlightSimUpDownCommandSwitch::getValue(uint8_t *valueIndex) {
+float FlightSimUpDownCommandSwitch::findValue(int8_t *valueIndex) {
   for (uint8_t i=0; i<numberOfPositions; i++) {
     if (getPositionData(matrixPositions[i])) {
       if (valueIndex) {
@@ -461,8 +489,8 @@ float FlightSimUpDownCommandSwitch::getValue(uint8_t *valueIndex) {
 }
 
 void FlightSimUpDownCommandSwitch::handleLoop(bool resync) {
-  uint8_t valueIndex = -1;
-  float switchValue = getValue(&valueIndex);  // get current value and value index on matrix
+  int8_t valueIndex = -1;
+  float switchValue = findValue(&valueIndex);  // get current value and value index on matrix
   float datarefValue = positionDataref.read(); // get current value in X-Plane
 
   if ((switchValue != oldSwitchValue) || resync) {
@@ -475,6 +503,7 @@ void FlightSimUpDownCommandSwitch::handleLoop(bool resync) {
     }
     switchChanged = true;
     oldSwitchValue = switchValue;
+    callback(switchValue);
   }
 
   if (abs(switchValue-datarefValue)<tolerance) {
@@ -555,6 +584,11 @@ void FlightSimUpDownCommandSwitch::handleLoop(bool resync) {
   }
 }
 
+float FlightSimUpDownCommandSwitch::getValue() {
+  return (oldSwitchValue);
+}
+
+
 /*
  * Matrix On-Off switch that writes values to a dataref
  *
@@ -581,7 +615,12 @@ void FlightSimOnOffDatarefSwitch::handleLoop(bool resync) {
     }
     dataref.write(value);
     oldValue = switchOn;
+    callback(switchOn ? 1.0 : 0.0);
   }
+}
+
+float FlightSimOnOffDatarefSwitch::getValue() {
+  return (oldValue ? 1.0 : 0.0);
 }
 
 /*
@@ -607,7 +646,7 @@ void FlightSimWriteDatarefSwitch::setDataref(const _XpRefStr_ *positionDataref) 
   this->positionDataref.assign(positionDataref);
 }
 
-float FlightSimWriteDatarefSwitch::getValue() {
+float FlightSimWriteDatarefSwitch::findValue() {
   for (uint8_t i=0; i<numberOfPositions; i++) {
     if (getPositionData(matrixPositions[i])) {
       return values[i];
@@ -617,7 +656,7 @@ float FlightSimWriteDatarefSwitch::getValue() {
 }
 
 void FlightSimWriteDatarefSwitch::handleLoop(bool resync) {
-  float switchValue = getValue();  // get current value on matrix
+  float switchValue = findValue();  // get current value on matrix
   if ((switchValue != oldSwitchValue) || resync) {
     oldSwitchValue = switchValue;
     if (debug) {
@@ -626,5 +665,10 @@ void FlightSimWriteDatarefSwitch::handleLoop(bool resync) {
       Serial.printf(" to dataref %s\n",name);
     }
     positionDataref.write(switchValue);
+    callback(switchValue);
   }
+}
+
+float FlightSimWriteDatarefSwitch::getValue() {
+  return (oldSwitchValue);
 }

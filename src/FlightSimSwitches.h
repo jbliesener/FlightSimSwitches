@@ -117,20 +117,35 @@ class MatrixElement {
   public:
     MatrixElement(FlightSimSwitches *matrix);
     MatrixElement(FlightSimSwitches &matrix) : MatrixElement(&matrix) {};
+    virtual ~MatrixElement() {};
     void setDebug(bool debug) { this->debug = debug; }
+    virtual float getValue() =0;
+    void onChange(void (*fptr)(float)) {
+      hasCallbackContext=false;
+      change_callback = fptr;
+    }
+    void onChange(void (*fptr)(float,void*), void* info) {
+      hasCallbackContext=true;
+      change_callback = (void (*)(float))fptr;
+      callbackContext = info;
+    }
   protected:
     FlightSimSwitches *matrix;
     MatrixElement* nextElement;
     static MatrixElement *firstElement;
     static MatrixElement *lastElement;
     static bool lastEnabled;
+    void (*change_callback)(float);
+    void *callbackContext;
+    bool hasCallbackContext;
     bool debug;
     bool getPositionData(uint32_t position);
     virtual void handleLoop(bool resync) =0;
     virtual uint32_t getDebugMask() = 0;
+    void callback(float newValue);
 };
 
-class FlightSimOnOffCommandSwitch : MatrixElement {
+class FlightSimOnOffCommandSwitch : public MatrixElement {
   public:
     FlightSimOnOffCommandSwitch(FlightSimSwitches *matrix, uint32_t matrixPosition);
 
@@ -141,6 +156,7 @@ class FlightSimOnOffCommandSwitch : MatrixElement {
 
     void setPosition(uint32_t matrixPosition) { this->matrixPosition = matrixPosition; }
     void setOnOffCommands(const _XpRefStr_ *onCommand, const _XpRefStr_ *offCommand);
+    virtual float getValue();
   protected:
     void setOnCommandOnly(const _XpRefStr_ *onCommand);
     void setOffCommandOnly(const _XpRefStr_ *offCommand);
@@ -157,7 +173,7 @@ class FlightSimOnOffCommandSwitch : MatrixElement {
     FlightSimCommand offCommand;
 };
 
-class FlightSimOnCommandSwitch : FlightSimOnOffCommandSwitch {
+class FlightSimOnCommandSwitch : public FlightSimOnOffCommandSwitch {
   public:
     FlightSimOnCommandSwitch(FlightSimSwitches *matrix, uint32_t matrixPosition) : FlightSimOnOffCommandSwitch(matrix, matrixPosition) {};
 
@@ -173,7 +189,7 @@ class FlightSimOnCommandSwitch : FlightSimOnOffCommandSwitch {
     virtual uint32_t getDebugMask() { return DEBUG_SWITCHES_ON_COMMAND; }
 };
 
-class FlightSimOffCommandSwitch : FlightSimOnOffCommandSwitch {
+class FlightSimOffCommandSwitch : public FlightSimOnOffCommandSwitch {
   public:
     FlightSimOffCommandSwitch(FlightSimSwitches *matrix, uint32_t matrixPosition) : FlightSimOnOffCommandSwitch(matrix, matrixPosition) {};
 
@@ -189,7 +205,7 @@ class FlightSimOffCommandSwitch : FlightSimOnOffCommandSwitch {
     virtual uint32_t getDebugMask() { return DEBUG_SWITCHES_OFF_COMMAND; }
 };
 
-class FlightSimPushbutton : MatrixElement {
+class FlightSimPushbutton : public MatrixElement {
   public:
     FlightSimPushbutton(FlightSimSwitches *matrix, uint32_t matrixPosition, bool inverted=false);
 
@@ -201,6 +217,7 @@ class FlightSimPushbutton : MatrixElement {
     void setInverted(bool inverted) { this->inverted = inverted; }
     void setCommand(const _XpRefStr_ *command)  { this->command = command; this->commandName = command; };
     FlightSimPushbutton & operator = (const _XpRefStr_ *s) { setCommand(s); return *this; }
+    virtual float getValue();
   protected:
     virtual void handleLoop(bool resync);
     virtual uint32_t getDebugMask() { return DEBUG_SWITCHES_PUSHBUTTON; }
@@ -213,7 +230,7 @@ class FlightSimPushbutton : MatrixElement {
 
 
 
-class FlightSimUpDownCommandSwitch : MatrixElement {
+class FlightSimUpDownCommandSwitch : public MatrixElement {
   public:
     FlightSimUpDownCommandSwitch(FlightSimSwitches *matrix,
       uint8_t numberOfPositions, uint32_t *positions, float *values, float defaultValue=0, float tolerance=DEFAULT_TOLERANCE);
@@ -230,8 +247,9 @@ class FlightSimUpDownCommandSwitch : MatrixElement {
     void setTolerance(float tolerance) { this->tolerance = tolerance; }
     void setDatarefAndCommands(const _XpRefStr_ *positionDataref, const _XpRefStr_ *upCommand, const _XpRefStr_ *downCommand);
     void setPushbuttonPosition(const uint8_t pushbuttonPosition) { this->pushbuttonPositions |= _BV(pushbuttonPosition); }
+    virtual float getValue();
   protected:
-    virtual float getValue(uint8_t *valueIndex);
+    virtual float findValue(int8_t *valueIndex);
     virtual void handleLoop(bool resync);
     virtual uint32_t getDebugMask() { return DEBUG_SWITCHES_UPDOWN_COMMAND; }
   private:
@@ -253,7 +271,7 @@ class FlightSimUpDownCommandSwitch : MatrixElement {
     float oldSwitchValue;
 };
 
-class FlightSimWriteDatarefSwitch : MatrixElement {
+class FlightSimWriteDatarefSwitch : public MatrixElement {
   public:
     FlightSimWriteDatarefSwitch(FlightSimSwitches *matrix,
       uint8_t numberOfPositions, uint32_t *positions, float *values, float defaultValue=0, float tolerance=DEFAULT_TOLERANCE);
@@ -268,8 +286,9 @@ class FlightSimWriteDatarefSwitch : MatrixElement {
     void setTolerance(float tolerance) { this->tolerance = tolerance; }
     void setDataref(const _XpRefStr_ *positionDataref);
     FlightSimWriteDatarefSwitch & operator = (const _XpRefStr_ *s) { setDataref(s); return *this; }
-  protected:
     virtual float getValue();
+  protected:
+    virtual float findValue();
     virtual void handleLoop(bool resync);
     virtual uint32_t getDebugMask() { return DEBUG_SWITCHES_WRITE_DATAREF; }
   private:
@@ -283,7 +302,7 @@ class FlightSimWriteDatarefSwitch : MatrixElement {
     FlightSimFloat positionDataref;
 };
 
-class FlightSimOnOffDatarefSwitch : MatrixElement {
+class FlightSimOnOffDatarefSwitch : public MatrixElement {
   public:
     FlightSimOnOffDatarefSwitch(FlightSimSwitches *matrix, uint32_t position, bool inverted=false);
 
@@ -301,6 +320,7 @@ class FlightSimOnOffDatarefSwitch : MatrixElement {
     void setDataref(const _XpRefStr_ *positionDataref);
     void setPosition(uint32_t matrixPosition) { this->matrixPosition = matrixPosition; }
     void setInverted(bool inverted) { this->inverted = inverted; }
+    virtual float getValue();
   protected:
     virtual void handleLoop(bool resync);
     virtual uint32_t getDebugMask() { return DEBUG_SWITCHES_ONOFF_DATAREF; }
