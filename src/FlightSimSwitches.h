@@ -78,6 +78,8 @@ class FlightSimSwitches {
     void clearChanged() { this->hasChangedPoll=false; }
     void setDebug(uint32_t debugType);
     void print();
+    void printTime(Stream *s);
+
     static FlightSimSwitches *firstMatrix;
   private:
     bool checkInitialized(const char *message, bool mustBeInitialized);

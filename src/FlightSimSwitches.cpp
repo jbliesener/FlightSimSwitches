@@ -76,10 +76,24 @@ FlightSimSwitches::FlightSimSwitches(uint8_t numberOfColumns, const uint8_t *col
    : FlightSimSwitches(1,FLIGHTSIM_EMPTY_PINS,numberOfColumns,columnPins,scanRate,activeLow)
    {};
 
+void FlightSimSwitches::printTime(Stream *s) {
+  char buf[13];
+  sprintf(buf,"%10lu: ",millis());
+  s->print(buf);
+}
+
 bool FlightSimSwitches::checkInitialized(const char *message, bool mustBeInitialized) {
   if (initialized != mustBeInitialized) {
-    Serial.printf("%10lu: FlightSimSwitch ERROR: %s must be called %s begin() %s\n",
-      millis(), message, mustBeInitialized ? "after" : "before", mustBeInitialized ? "has been called with a correct setup." : "");
+	printTime(&Serial);
+    Serial.print("FlightSimSwitch ERROR: ");
+	Serial.print(message);
+    Serial.print(" must be called ");
+	Serial.print(mustBeInitialized ? "after" : "before");
+	Serial.print("begin() ");
+	if (mustBeInitialized) {
+		Serial.print("has been called with a correct setup.");
+	}
+	Serial.println();
     return false;
   }
   return true;
@@ -87,32 +101,37 @@ bool FlightSimSwitches::checkInitialized(const char *message, bool mustBeInitial
 
 void FlightSimSwitches::begin() {
   if (this->numberOfColumns>32) {
-    Serial.printf("%10lu: FlightSimSwitches ERROR: Sorry, 32 columns max\n",millis());
+	printTime(&Serial);
+    Serial.println("FlightSimSwitches ERROR: Sorry, 32 columns max");
     return;
   }
 
   if (!this->numberOfColumns) {
-    Serial.printf("%10lu: FlightSimSwitches ERROR: Sorry, we need at least one column\n",millis());
+	printTime(&Serial);
+    Serial.println("FlightSimSwitches ERROR: Sorry, we need at least one column");
     return;
   }
 
   if (!this->numberOfRows) {
-    Serial.printf("%10lu: FlightSimSwitches ERROR: Sorry, we need at least one row\n",millis());
+	printTime(&Serial);
+    Serial.println("FlightSimSwitches ERROR: Sorry, we need at least one row");
     return;
   }
 
   if (!this->rowPins) {
-    Serial.printf("%10lu: FlightSimSwitches ERROR:  Please set the row pins\n",millis());
+    Serial.println("FlightSimSwitches ERROR:  Please set the row pins");
     return;
   }
 
   if (!this->columnPins) {
-    Serial.printf("%10lu: FlightSimSwitches ERROR: Please set the column pins\n",millis());
+    printTime(&Serial);
+    Serial.println("FlightSimSwitches ERROR: Please set the column pins");
     return;
   }
 
   if (!this->scanRate) {
-    Serial.printf("%10lu: FlightSimSwitch ERROR: scanRate can not be zero!\n",millis());
+    printTime(&Serial);
+    Serial.println("FlightSimSwitch ERROR: scanRate can not be zero");
     return;
   }
 
@@ -126,7 +145,9 @@ void FlightSimSwitches::begin() {
       }
     }
     if (debugScan) {
-      Serial.printf("%10lu: FlightSimSwitch: Number of row pins: %d\n",millis(),numberOfRowPins);
+	  printTime(&Serial);
+      Serial.print("FlightSimSwitch: Number of row pins: ");
+	  Serial.println(numberOfRowPins);
     }
   }
 
@@ -153,7 +174,9 @@ void FlightSimSwitches::setRowNumber(uint32_t currentRow) {
     return;
 
   if (debugScan) {
-    Serial.printf("%10lu: FlightSimSwitches: Setting row %d\n",millis(),currentRow);
+	printTime(&Serial);
+    Serial.print("FlightSimSwitches: Setting row ");
+	Serial.println(currentRow);
   }
   this->currentRow = currentRow;
   if (!numberOfRows) return;  // do nothing if switches are connected directly to Teensy pins
@@ -185,7 +208,9 @@ uint32_t FlightSimSwitches::getSingleRowData() {
     }
   }
   if (debugScan) {
-    Serial.printf("%10lu: FlightSimSwitches: reading row data: %08x\n",millis(),readVal);
+	printTime(&Serial);
+    Serial.print("FlightSimSwitches: reading row data: ");
+	Serial.println(readVal);
   }
   return readVal;
 }
@@ -224,7 +249,8 @@ void FlightSimSwitches::loop() {
       bool enabled = FlightSim.isEnabled();
       bool resync = enabled && (!lastEnabled);
       if (resync) {
-        Serial.printf("%10lu: FlightSimSwitches: Flightsim started, resyncing!\n",millis());
+	    printTime(&Serial);
+        Serial.println("FlightSimSwitches: Flightsim started, resyncing!");
       }
       for (MatrixElement *elem = MatrixElement::firstElement; elem; elem=elem->nextElement) {
         if (elem->matrix == this) {
@@ -244,14 +270,25 @@ void FlightSimSwitches::print() {
 
   if (numberOfRows>1) {
     // Matrix
-    Serial.printf("%10lu: Switch matrix:\n",millis());
-    Serial.printf("%10lu:     ",millis());
+	printTime(&Serial);
+	Serial.println("Switch matrix");
+	printTime(&Serial);
+	Serial.print("    ");
     for (uint8_t i=0; i<numberOfColumns; i++) {
-      Serial.printf("%3d",i);
+	  Serial.print(" ");
+	  if (i<10) {
+		  Serial.print(" ");
+	  }
+	  Serial.print(i);
     }
     Serial.println();
     for (uint8_t r=0; r<numberOfRows; r++) {
-      Serial.printf("%10lu: %2d: ",millis(),r);
+	  printTime(&Serial);
+	  if (r<10) {
+		  Serial.print(" ");
+	  }
+	  Serial.print(r);
+	  Serial.print(": ");
       for (uint8_t c=0; c<numberOfColumns; c++) {
         if (rowData[r] & _BV(c)) {
           Serial.print("  X");
@@ -261,12 +298,16 @@ void FlightSimSwitches::print() {
       }
       Serial.println();
     }
-    Serial.printf("%10lu: ---------------\n",millis());
+	printTime(&Serial);
+	Serial.println("---------------");
   } else {
     // directly connected Switches
-    Serial.printf("%10lu: Switches: ",millis());
+	printTime(&Serial);
+    Serial.print("Switches: ");
     for (uint8_t i=0; i<numberOfColumns; i++) {
-      Serial.printf("%d: %s",i,(rowData[0] & _BV(i) ? "ON" : "off"));
+      Serial.print(i);
+	  Serial.print(": ");
+	  Serial.print(rowData[0] & _BV(i) ? "ON" : "off");
       if (i<numberOfColumns-1) {
         Serial.print(", ");
       }
@@ -311,11 +352,13 @@ MatrixElement::MatrixElement(FlightSimSwitches *matrix) {
 
 bool MatrixElement::getPositionData(uint32_t position) {
   if (!matrix) {
-    Serial.printf("%10lu: FlightSimSwitch ERROR: Please define a FlightSimSwitches or MatrixSwitches object before defining individual switches!\n", millis());
+	matrix->printTime(&Serial);
+    Serial.println("FlightSimSwitch ERROR: Please define a FlightSimSwitches or MatrixSwitches object before defining individual switches!");
     return 0;
   }
   if (position == NO_POSITION) {
-    Serial.printf("%10lu: FlightSimSwitch ERROR: Switch position not set!\n",millis());
+	matrix->printTime(&Serial);
+    Serial.println("FlightSimSwitch ERROR: Switch position not set!");
   }
   uint32_t *rowData = matrix->getRowData();
   uint32_t rowValue = rowData[MATRIX_ROW(position)];
@@ -377,14 +420,17 @@ void FlightSimOnOffCommandSwitch::handleLoop(bool resync) {
     oldValue = value;
 
     if (!hasOnCommand && !hasOffCommand) {
-      Serial.printf("%10lu: FlightSimOnOffSwitch ERROR: OnOffCommandSwitch: Commands not set\n");
+	  matrix->printTime(&Serial);
+      Serial.println("FlightSimOnOffSwitch ERROR: OnOffCommandSwitch: Commands not set");
       return;
     }
 
     if (value) {
       if (hasOnCommand) {
         if (debug) {
-          Serial.printf("%10lu: FlightSimOnOffCommandSwitch: Sending ON command %s\n", millis(), onName);
+		  matrix->printTime(&Serial);
+          Serial.print("FlightSimOnOffCommandSwitch: Sending ON command ");
+		  Serial.println((const char *) onName);
         }
         onCommand.once();
         callback(1.0);
@@ -392,7 +438,9 @@ void FlightSimOnOffCommandSwitch::handleLoop(bool resync) {
     } else {
       if (hasOffCommand) {
         if (debug) {
-          Serial.printf("%10lu: FlightSimOnOffCommandSwitch: Sending OFF command %s\n",millis(), offName);
+		  matrix->printTime(&Serial);
+          Serial.print("FlightSimOnOffCommandSwitch: Sending OFF command ");
+		  Serial.println((const char *) offName);
         }
         offCommand.once();
         callback(0.0);
@@ -426,13 +474,19 @@ void FlightSimPushbutton::handleLoop(bool resync) {
 
     if (value ^ inverted) {
       if (debug) {
-        Serial.printf("%10lu: FlightSimPushbutton: Sending command %s BEGIN\n", millis(), commandName);
+		matrix->printTime(&Serial);
+        Serial.print("FlightSimOnOffCommandSwitch: Sending command ");
+		Serial.print((const char *) commandName);
+		Serial.println(" BEGIN");
       }
       command.begin();
       callback(1.0);
     } else {
       if (debug) {
-        Serial.printf("%10lu: FlightSimPushbutton: Sending command %s END\n",millis(), commandName);
+  	    matrix->printTime(&Serial);
+	    Serial.print("FlightSimOnOffCommandSwitch: Sending command ");
+	    Serial.print((const char *) commandName);
+	    Serial.println(" END");
       }
       command.end();
       callback(0.0);
@@ -495,11 +549,18 @@ void FlightSimUpDownCommandSwitch::handleLoop(bool resync) {
 
   if ((switchValue != oldSwitchValue) || resync) {
     if (debug) {
-      Serial.printf("%10lu: FlightSimUpDownCommandSwitch: dataref name: %s, switch value=", millis(), name);
+	  matrix->printTime(&Serial);
+      Serial.print("FlightSimUpDownCommandSwitch: dataref name: ");
+	  Serial.print((const char *) name);
+	  Serial.print(", switch value=");
       Serial.print(switchValue);
       Serial.print(", old switch value=");
       Serial.print(oldSwitchValue);
-      Serial.printf(", resync=%d, valueIndex=%d, switch changed!\n", resync, valueIndex);
+      Serial.print(", resync=");
+	  Serial.print(resync ? "TRUE" : "FALSE");
+	  Serial.print(", valueIndex=");
+	  Serial.print(valueIndex);
+	  Serial.println(", switch changed!");
     }
     switchChanged = true;
     oldSwitchValue = switchValue;
@@ -510,7 +571,10 @@ void FlightSimUpDownCommandSwitch::handleLoop(bool resync) {
     if (switchChanged) {
       // below tolerance is not considered a change
       if (debug) {
-        Serial.printf("%10lu: FlightSimUpDownCommandSwitch: dataref name: %s, switch value=", millis(), name);
+		matrix->printTime(&Serial);
+        Serial.print("FlightSimUpDownCommandSwitch: dataref name: ");
+		Serial.print((const char *) name);
+		Serial.print(", switch value=");
         Serial.print(switchValue);
         Serial.print(", dataref value=");
         Serial.print(datarefValue);
@@ -531,7 +595,12 @@ void FlightSimUpDownCommandSwitch::handleLoop(bool resync) {
     } else {
       // dataref has changed, we can send the next command
       if (debug) {
-        Serial.printf("%10lu: FlightSimUpDownCommandSwitch: dataref name: %s, dataref value=" , millis(), name);
+		matrix->printTime(&Serial);
+        Serial.print("FlightSimUpDownCommandSwitch: dataref name: ");
+		Serial.print((const char *) name);
+		Serial.print(", switch value=");
+        Serial.print(switchValue);
+        Serial.print(", dataref value=");
         Serial.print(datarefValue);
         Serial.print(", old dataref value=");
         Serial.print(oldDatarefValue);
@@ -546,11 +615,14 @@ void FlightSimUpDownCommandSwitch::handleLoop(bool resync) {
     oldDatarefValue = datarefValue;
     if (switchValue > datarefValue) {
       if (debug) {
-        Serial.printf("%10lu: FlightSimUpDownCommandSwitch: dataref name: %s, switch value=" , millis(), name);
+		matrix->printTime(&Serial);
+        Serial.print("FlightSimUpDownCommandSwitch: dataref name: ");
+		Serial.print((const char *) name);
+		Serial.print(", switch value=");
         Serial.print(switchValue);
         Serial.print(", dataref value=");
         Serial.print(datarefValue);
-        Serial.printf(", sending UP command for %s\n", name);
+        Serial.println(", sending UP command");
       }
       if (pushbuttonCommand) {
         pushbuttonCommand->end();
@@ -564,11 +636,14 @@ void FlightSimUpDownCommandSwitch::handleLoop(bool resync) {
       }
     } else {
       if (debug) {
-        Serial.printf("%10lu: FlightSimUpDownCommandSwitch: dataref name: %s, switch value=" , millis(), name);
+		matrix->printTime(&Serial);
+        Serial.print("FlightSimUpDownCommandSwitch: dataref name: ");
+		Serial.print((const char *) name);
+		Serial.print(", switch value=");
         Serial.print(switchValue);
         Serial.print(", dataref value=");
         Serial.print(datarefValue);
-        Serial.printf(", sending DOWN command for %s\n", name);
+        Serial.println(", sending DOWN command");
       }
       if (pushbuttonCommand) {
         pushbuttonCommand->end();
@@ -611,7 +686,11 @@ void FlightSimOnOffDatarefSwitch::handleLoop(bool resync) {
   if (switchOn != oldValue || resync) {
     int32_t value = switchOn ^ inverted ? 1 : 0;
     if (debug) {
-      Serial.printf("%10lu: FlightSimOnOffDatarefSwitch: Writing value %d to dataref %s\n",millis(),value,name);
+	  matrix->printTime(&Serial);
+	  Serial.print("FlightSimOnOffDatarefSwitch: Writing value ");
+	  Serial.print(value);
+	  Serial.print(" to dataref ");
+	  Serial.println((const char *) name);
     }
     dataref.write(value);
     oldValue = switchOn;
@@ -660,9 +739,11 @@ void FlightSimWriteDatarefSwitch::handleLoop(bool resync) {
   if ((switchValue != oldSwitchValue) || resync) {
     oldSwitchValue = switchValue;
     if (debug) {
-      Serial.printf("%10lu: FlightSimWriteDatarefSwitch: Writing value ", millis());
+	  matrix->printTime(&Serial);
+      Serial.print("FlightSimWriteDatarefSwitch: Writing value ");
       Serial.print(switchValue);
-      Serial.printf(" to dataref %s\n",name);
+      Serial.print(" to dataref ");
+	  Serial.println((const char *) name);
     }
     positionDataref.write(switchValue);
     callback(switchValue);
