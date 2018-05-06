@@ -1,4 +1,4 @@
-#include "FlightsimSwitches.h"
+#include "FlightSimSwitches.h"
 
 /*
  * Switch Matrix for Teensy Flightsim projects
