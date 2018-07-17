@@ -6,53 +6,53 @@
 # Datatypes (KEYWORD1)
 ###########################################
 
-FlightSimSwitches	            KEYWORD1
-FlightSimOnOffCommandSwitch	  KEYWORD1
-FlightSimOnCommandSwitch	    KEYWORD1
-FlightSimOffCommandSwitch	    KEYWORD1
-FlightSimPushbutton	          KEYWORD1
+FlightSimSwitches	KEYWORD1
+FlightSimOnOffCommandSwitch	KEYWORD1
+FlightSimOnCommandSwitch	KEYWORD1
+FlightSimOffCommandSwitch	KEYWORD1
+FlightSimPushbutton	KEYWORD1
 FlightSimUpDownCommandSwitch	KEYWORD1
-FlightSimOnOffDatarefSwitch	  KEYWORD1
-FlightSimWriteDatarefSwitch	  KEYWORD1
+FlightSimOnOffDatarefSwitch	KEYWORD1
+FlightSimWriteDatarefSwitch	KEYWORD1
 
-MatrixSwitches	            KEYWORD1
-MatrixOnOffCommandSwitch	  KEYWORD1
-MatrixOnCommandSwitch	      KEYWORD1
-MatrixOffCommandSwitch	    KEYWORD1
-MatrixPushbutton	          KEYWORD1
-MatrixUpDownCommandSwitch	  KEYWORD1
-MatrixOnOffDatarefSwitch	  KEYWORD1
-MatrixWriteDatarefSwitch	  KEYWORD1
+MatrixSwitches	KEYWORD1
+MatrixOnOffCommandSwitch	KEYWORD1
+MatrixOnCommandSwitch	KEYWORD1
+MatrixOffCommandSwitch	KEYWORD1
+MatrixPushbutton	KEYWORD1
+MatrixUpDownCommandSwitch	KEYWORD1
+MatrixOnOffDatarefSwitch	KEYWORD1
+MatrixWriteDatarefSwitch	KEYWORD1
 
 
 ###########################################
 # Methods and Functions (KEYWORD2)
 ###########################################
 
-setNumberOfRows	       KEYWORD2
-setNumberOfColumns	   KEYWORD2
-setRowPins	           KEYWORD2
-setColumnPins	         KEYWORD2
-setScanRate	           KEYWORD2
-setActiveLow	         KEYWORD2
-setRowsMultiplexed	   KEYWORD2
-begin	                 KEYWORD2
-getRowData	           KEYWORD2
-isOn                   KEYWORD2
-onChangePosition       KEYWORD2
-onChangeMatrix         KEYWORD2
-hasChanged             KEYWORD2
-clearChanged           KEYWORD2
-setDebug               KEYWORD2
-print                  KEYWORD2
-setPosition            KEYWORD2
-setOnOffCommands       KEYWORD2
-setCommand             KEYWORD2
-setInverted            KEYWORD2
-setDefaultValue        KEYWORD2
-setTolerance           KEYWORD2
-setDatarefAndCommands  KEYWORD2
-setDataref             KEYWORD2
+setNumberOfRows	KEYWORD2
+setNumberOfColumns	KEYWORD2
+setRowPins	KEYWORD2
+setColumnPins	KEYWORD2
+setScanRate	KEYWORD2
+setActiveLow	KEYWORD2
+setRowsMultiplexed	KEYWORD2
+begin	KEYWORD2
+getRowData	KEYWORD2
+isOn	KEYWORD2
+onChangePosition	KEYWORD2
+onChangeMatrix	KEYWORD2
+hasChanged	KEYWORD2
+clearChanged	KEYWORD2
+setDebug	KEYWORD2
+print	KEYWORD2
+setPosition	KEYWORD2
+setOnOffCommands	KEYWORD2
+setCommand	KEYWORD2
+setInverted	KEYWORD2
+setDefaultValue	KEYWORD2
+setTolerance	KEYWORD2
+setDatarefAndCommands	KEYWORD2
+setDataref	KEYWORD2
 
 ###########################################
 # Instances (KEYWORD2)
@@ -62,13 +62,13 @@ setDataref             KEYWORD2
 # Constants (LITERAL1)
 ###########################################
 
-DEBUG_SCAN                    LITERAL1
-DEBUG_SWITCHES_ONOFF_COMMAND  LITERAL1
-DEBUG_SWITCHES_ON_COMMAND     LITERAL1
-DEBUG_SWITCHES_OFF_COMMAND    LITERAL1
-DEBUG_SWITCHES_PUSHBUTTON     LITERAL1
-DEBUG_SWITCHES_UPDOWN_COMMAND LITERAL1
-DEBUG_SWITCHES_ONOFF_DATAREF  LITERAL1
-DEBUG_SWITCHES_WRITE_DATAREF  LITERAL1
-DEBUG_SWITCHES                LITERAL1
-DEBUG_OFF                     LITERAL1
+DEBUG_SCAN	LITERAL1
+DEBUG_SWITCHES_ONOFF_COMMAND	LITERAL1
+DEBUG_SWITCHES_ON_COMMAND	LITERAL1
+DEBUG_SWITCHES_OFF_COMMAND	LITERAL1
+DEBUG_SWITCHES_PUSHBUTTON	LITERAL1
+DEBUG_SWITCHES_UPDOWN_COMMAND	LITERAL1
+DEBUG_SWITCHES_ONOFF_DATAREF	LITERAL1
+DEBUG_SWITCHES_WRITE_DATAREF	LITERAL1
+DEBUG_SWITCHES	LITERAL1
+DEBUG_OFF	LITERAL1
