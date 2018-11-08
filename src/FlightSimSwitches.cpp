@@ -504,15 +504,12 @@ size_t MatrixElement::setGenericPinData(uint8_t *destination, uint32_t startPinI
    {
       for (size_t i = 0; i < count; i++)
       {
-         Serial.print("StartPinIndex: ");
-         Serial.println(startPinIndex);
          *destination     = (uint8_t)(*matrixPositions);
          *matrixPositions = startPinIndex;
          destination++;
          matrixPositions++;
          startPinIndex++;
       }
-      Serial.println("---");
       return count;
    }
    else
