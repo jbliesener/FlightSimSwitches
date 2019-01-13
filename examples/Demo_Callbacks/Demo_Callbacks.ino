@@ -34,6 +34,7 @@ void setup() {
   switch2.onChange(sw23ChangeFunction,(void*) 3); // Switch 2 is on pin 3
   switch3.onChange(sw23ChangeFunction,(void*) 4); // Switch 3 is on pin 4
 
+  switches.setDebug(DEBUG_SWITCHES);
   switches.begin();
 }
 
