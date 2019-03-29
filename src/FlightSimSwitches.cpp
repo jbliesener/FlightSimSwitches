@@ -36,9 +36,9 @@ FlightSimSwitches::FlightSimSwitches(uint32_t scanRate, bool activeLow)
    this->currentRow             = 0;
    this->initialized            = false;
    this->matrixTimer            = 0;
-   this->scanRate               = DEFAULT_SCAN_RATE;
+   this->scanRate               = scanRate;
    this->lastRow                = 0xff;
-   this->activeLow              = true;
+   this->activeLow              = activeLow;
    this->hasChangedLoop         = false;
    this->hasChangedPoll         = false;
    this->changePositionCallback = NULL;
