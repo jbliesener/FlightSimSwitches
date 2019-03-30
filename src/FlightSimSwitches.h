@@ -7,6 +7,15 @@
 #error "Please use a Teensy board and set USB Type in Arduino to include 'Flight Sim Controls'"
 #endif
 
+#define FLIGHTSIM_STARTUP   while (!Serial && millis()<3000); \
+  if (Serial) { \
+    delay(200); \
+    Serial.begin(115200); \
+    FlightSim.update(); \
+    Serial.printf("%10lu: Start " __FILE__ ", compiled on " __DATE__ " at " __TIME__ "\n", millis()); \
+  }
+
+
 /*
  * Switch Matrix for Teensy Flightsim projects
  *
