@@ -241,10 +241,12 @@ void FlightSimSwitches::begin()
 
    memset(rowData, 0, MAX_ROWS * sizeof(uint32_t));
 
-   for (int i = 0; i < numberOfRowPins; i++)
-   {
-      pinMode(rowPins[i], OUTPUT);
-      digitalWrite(rowPins[i], activeLow ? HIGH : LOW);
+   if (rowPins != FLIGHTSIM_EMPTY_PINS) {
+     for (int i = 0; i < numberOfRowPins; i++)
+     {
+        pinMode(rowPins[i], OUTPUT);
+        digitalWrite(rowPins[i], activeLow ? HIGH : LOW);
+     }
    }
 
    for (int i = 0; i < numberOfColumns; i++)
@@ -266,17 +268,19 @@ void FlightSimSwitches::setRowNumber(uint32_t currentRow)
       return;
    }
 
+   this->currentRow = currentRow;
+   if (rowPins == FLIGHTSIM_EMPTY_PINS)
+   {
+      return;                      // do nothing if switches are connected directly to Teensy pins
+   }
+
    if (debugScan)
    {
       printTime(&Serial);
       Serial.print("FlightSimSwitches: Setting row ");
       Serial.println(currentRow);
    }
-   this->currentRow = currentRow;
-   if (!numberOfRows)
-   {
-      return;                      // do nothing if switches are connected directly to Teensy pins
-   }
+
    if (!rowsMuxed)
    {
       // turn only selected row output LOW
