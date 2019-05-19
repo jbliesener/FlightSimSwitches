@@ -3,7 +3,7 @@
 
 #include <Arduino.h>
 
-#ifndef FLIGHTSIM_INTERFACE
+#if !defined(FLIGHTSIM_INTERFACE) && !defined(CORE_TEENSY_FLIGHTSIM)
 #error "Please use a Teensy board and set USB Type in Arduino to include 'Flight Sim Controls'"
 #endif
 

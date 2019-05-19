@@ -251,7 +251,11 @@ void FlightSimSwitches::begin()
 
    for (int i = 0; i < numberOfColumns; i++)
    {
+#ifdef INPUT_PULLDOWN
       pinMode(columnPins[i], activeLow ? INPUT_PULLUP : INPUT_PULLDOWN);
+#else
+pinMode(columnPins[i], activeLow ? INPUT_PULLUP : INPUT);
+#endif
    }
 
    initialized = true;
