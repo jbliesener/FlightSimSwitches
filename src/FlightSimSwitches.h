@@ -7,12 +7,20 @@
 #error "Please use a Teensy board and set USB Type in Arduino to include 'Flight Sim Controls'"
 #endif
 
+#ifdef CORE_TEENSY_FLIGHTSIM
+#define PRINT_DATAREF(x) ((const __FlashStringHelper *) x)
+#else
+#define PRINT_DATAREF(x) ((const char *) x)
+#endif
+
+#define _BV32(i) (((uint32_t) 1) << i)
+
 #define FLIGHTSIM_STARTUP   while (!Serial && millis()<3000); \
   if (Serial) { \
     delay(200); \
     Serial.begin(115200); \
     FlightSim.update(); \
-    Serial.printf("%10lu: Start " __FILE__ ", compiled on " __DATE__ " at " __TIME__ "\n", millis()); \
+    Serial.printf(F("%10lu: Start " __FILE__ ", compiled on " __DATE__ " at " __TIME__ "\n"), millis()); \
   }
 
 
@@ -71,7 +79,7 @@ public:
    FlightSimSwitches(uint8_t numberOfColumns, const uint8_t *columnPins, uint32_t scanrate = DEFAULT_SCAN_RATE, bool activeLow = true);
    void setNumberOfOutputs(uint8_t rows)
    {
-      if (checkInitialized("setNumberOfRows", false))
+      if (checkInitialized(F("setNumberOfRows"), false))
       {
          numberOfRows = rows;
       }
@@ -79,7 +87,7 @@ public:
 
    void setNumberOfInputs(uint8_t columns)
    {
-      if (checkInitialized("setNumberOfColumns", false))
+      if (checkInitialized(F("setNumberOfColumns"), false))
       {
          numberOfColumns = columns;
       }
@@ -87,7 +95,7 @@ public:
 
    void setOutputPins(const uint8_t *rowPins)
    {
-      if (checkInitialized("setRowPins", false))
+      if (checkInitialized(F("setRowPins"), false))
       {
          this->rowPins = rowPins;
       }
@@ -95,7 +103,7 @@ public:
 
    void setInputPins(const uint8_t *columnPins)
    {
-      if (checkInitialized("setColumnPins", false))
+      if (checkInitialized(F("setColumnPins"), false))
       {
          this->columnPins = columnPins;
       }
@@ -108,7 +116,7 @@ public:
 
    void setActiveLow(uint32_t activeLow)
    {
-      if (checkInitialized("setActiveLow", false))
+      if (checkInitialized(F("setActiveLow"), false))
       {
          this->activeLow = activeLow;
       }
@@ -116,7 +124,7 @@ public:
 
    void setRowsMultiplexed(uint32_t rowsMuxed)
    {
-      if (checkInitialized("setRowsMultiplexed", false))
+      if (checkInitialized(F("setRowsMultiplexed"), false))
       {
          this->rowsMuxed = rowsMuxed;
       }
@@ -132,7 +140,7 @@ public:
 
    bool isOn(const uint8_t row, const uint8_t column)
    {
-      return rowData[row] & _BV(column);
+      return rowData[row] & _BV32(column);
    }
 
    void onChangePosition(void (*fptr)(uint8_t, uint8_t, bool))
@@ -161,7 +169,7 @@ public:
 
    static FlightSimSwitches *firstMatrix;
 private:
-   bool checkInitialized(const char *message, bool mustBeInitialized);
+   bool checkInitialized(const __FlashStringHelper *message, bool mustBeInitialized);
    void setRowNumber(uint32_t currentRow);
    uint32_t getSingleRowData();
 
@@ -483,7 +491,7 @@ public:
 
    void setPushbuttonPosition(const uint8_t pushbuttonPosition)
    {
-      this->pushbuttonPositions |= _BV(pushbuttonPosition);
+      this->pushbuttonPositions |= _BV32(pushbuttonPosition);
    }
 
    virtual float getValue();
