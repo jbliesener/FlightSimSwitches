@@ -106,6 +106,7 @@ public:
       if (checkInitialized(F("setColumnPins"), false))
       {
          this->columnPins = columnPins;
+         this->columnPinsAreDynamic = false;
       }
    }
 
