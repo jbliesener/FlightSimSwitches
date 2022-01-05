@@ -742,6 +742,7 @@ FlightSimUpDownCommandSwitch::FlightSimUpDownCommandSwitch(FlightSimSwitches *ma
    this->name = XPlaneRef("(null)");
    this->pushbuttonPositions = 0;
    this->pushbuttonCommand   = NULL;
+   this->findposition_callback = NULL;
 }
 
 
@@ -752,7 +753,6 @@ void FlightSimUpDownCommandSwitch::setDatarefAndCommands(const _XpRefStr_ *posit
    this->upCommand.assign(upCommand);
    this->downCommand.assign(downCommand);
 }
-
 
 float FlightSimUpDownCommandSwitch::findValue(int8_t *valueIndex)
 {
@@ -774,7 +774,17 @@ float FlightSimUpDownCommandSwitch::findValue(int8_t *valueIndex)
 void FlightSimUpDownCommandSwitch::handleLoop(bool resync)
 {
    int8_t valueIndex   = -1;
-   float  switchValue  = findValue(&valueIndex);        // get current value and value index on matrix
+   float switchValue;
+   if (findposition_callback) {
+      valueIndex = findposition_callback();
+      if (valueIndex >= 0 && valueIndex < (int8_t) getNumberOfPositions()) {
+         switchValue = values[valueIndex];
+      } else {
+         switchValue = defaultValue;
+      }
+   } else {
+      switchValue  = findValue(&valueIndex);        // get current value and value index on matrix
+   }
    float  datarefValue = positionDataref.read();        // get current value in X-Plane
 
    if ((switchValue != oldSwitchValue) || resync)
@@ -986,6 +996,7 @@ FlightSimWriteDatarefSwitch::FlightSimWriteDatarefSwitch(FlightSimSwitches *matr
    this->tolerance         = tolerance;
    this->oldSwitchValue    = 0.0;
    this->name = XPlaneRef("(null)");
+   this->findposition_callback = NULL;
 }
 
 
@@ -1011,7 +1022,17 @@ float FlightSimWriteDatarefSwitch::findValue()
 
 void FlightSimWriteDatarefSwitch::handleLoop(bool resync)
 {
-   float switchValue = findValue();      // get current value on matrix
+   float switchValue;
+   if (findposition_callback) {
+      int8_t valueIndex = findposition_callback();
+      if (valueIndex >= 0 && valueIndex < (int8_t) getNumberOfPositions()) {
+         switchValue = values[valueIndex];
+      } else {
+         switchValue = defaultValue;
+      }
+   } else {
+      switchValue  = findValue();        // get current value and value index on matrix
+   }
 
    if ((switchValue != oldSwitchValue) || resync)
    {

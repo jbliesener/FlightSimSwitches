@@ -490,6 +490,28 @@ public:
 
    void setDatarefAndCommands(const _XpRefStr_ *positionDataref, const _XpRefStr_ *upCommand, const _XpRefStr_ *downCommand);
 
+   inline bool isPinOn(uint8_t position) {
+      if (position >= numberOfPositions) {
+         return 0;
+      } else {
+         return getPositionData(matrixPositions[position]);
+      }
+   }
+
+   float getValue(uint8_t position) {
+      if (position >= numberOfPositions) {
+         return 0;
+      } else {
+         return values[position];
+      }
+   }
+
+   inline uint8_t getNumberOfPositions() {return numberOfPositions;}
+
+   void setFindPositionFunction(int8_t (*fptr)()) {
+      findposition_callback=fptr;
+   }
+
    void setPushbuttonPosition(const uint8_t pushbuttonPosition)
    {
       this->pushbuttonPositions |= _BV32(pushbuttonPosition);
@@ -528,6 +550,7 @@ private:
    bool commandSent;
    float oldDatarefValue;
    float oldSwitchValue;
+   int8_t (*findposition_callback)();
 };
 
 class FlightSimWriteDatarefSwitch : public MatrixElement {
@@ -544,6 +567,28 @@ public:
                                uint8_t numberOfPositions, uint32_t *positions, float *values, float defaultValue = 0, float tolerance = DEFAULT_TOLERANCE)
       : FlightSimWriteDatarefSwitch(&matrix, numberOfPositions, positions, values, defaultValue, tolerance)
    {
+   }
+
+   inline bool isPinOn(uint8_t position) {
+      if (position >= numberOfPositions) {
+         return 0;
+      } else {
+         return getPositionData(matrixPositions[position]);
+      }
+   }
+
+   float getValue(uint8_t position) {
+      if (position >= numberOfPositions) {
+         return 0;
+      } else {
+         return values[position];
+      }
+   }
+
+   inline size_t getNumberOfPositions() {return numberOfPositions;}
+
+   void setFindPositionFunction(int8_t (*fptr)()) {
+      findposition_callback=fptr;
    }
 
    void setDefaultValue(float defaultValue)
@@ -589,6 +634,7 @@ private:
    float defaultValue;
    const _XpRefStr_ *name;
    FlightSimFloat positionDataref;
+   int8_t (*findposition_callback)();
 };
 
 class FlightSimOnOffDatarefSwitch : public MatrixElement {

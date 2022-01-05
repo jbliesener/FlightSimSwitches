@@ -53,6 +53,10 @@ setDefaultValue	KEYWORD2
 setTolerance	KEYWORD2
 setDatarefAndCommands	KEYWORD2
 setDataref	KEYWORD2
+isPinOn KEYWORD2
+getValue    KEYWORD2
+getNumberOfPositions    KEYWORD2
+setFindPositionFunction KEYWORD2
 
 ###########################################
 # Instances (KEYWORD2)
